@@ -3,11 +3,12 @@ import sys
 
 HOST = '0.0.0.0' #'z37_zadanie1_1_python_server'
 BUFSIZE = 1024
+port = 8000
 
-if len(sys.argv) < 2:
-	port = 8000
-else:
+if len(sys.argv) >= 2:
 	port = int(sys.argv[1])
+
+print(f"Listening on {HOST}:{port}")
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
 	s.bind((HOST, port))
