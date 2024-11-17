@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 	i = 1;
 	size = 0;
 	while(1) {
-		if (recvfrom(s, buffer, BUFSIZE, 0, (struct sockaddr *) &client_address, &client_address_length) < 0) {
+		if (recvfrom(s, buffer, BUFSIZE, 0, (struct sockaddr *)&client_address, &client_address_length) < 0) {
 			perror("recvfrom failure");
 			exit(1);
 		}
@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 
 		//process message
 
-		printf("Received message no %d of size %d, i, size");
+		printf("Received message no %d of size %d", i, size);
 
 		//sendto
 

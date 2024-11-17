@@ -6,8 +6,7 @@
 
 const int BUFSIZE = 1024;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	int port, s;
 	int i = 1;
 	int size = 0;
@@ -20,10 +19,11 @@ int main(int argc, char **argv)
 	if (argc < 3) {
 		//perror("IP and port arguments expected!");
 		//exit(1);
-		strcpy(ip, "172.21.37.1");
+		strcpy(ip, "172.21.37.2");
 		port = 8000;
 	} else {
-		strcpy(ip, inet_addr(argv[1]));
+		strcpy(ip, argv[1]);
+		printf("%s\n", ip);
 		port = atoi(argv[2]);
 	}
 
@@ -33,15 +33,13 @@ int main(int argc, char **argv)
 	}
 
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = INADDR_ANY; //'0.0.0.0'
-	server.sin_port = port;
-
-	if (bind(s, (struct sockaddr *) &server, sizeof server) < 0) {
-		perror("Binding failure?");
+	if (inet_pton(AF_INET, ip, &server.sin_addr.s_addr) <= 0) {
+		perror("Ip failure?");
 		exit(1);
 	}
+	server.sin_port = port;
 
-	const char *message = "Hello, server!";
+	const char *message = "Hello world!";
 	uint16_t data_length = htons(strlen(message));
 	memcpy(buffer, &data_length, sizeof(uint16_t));
 	memcpy(buffer + sizeof(uint16_t), message, strlen(message));
@@ -56,13 +54,9 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 
+		//recvfrom
 
-		/*if (recvfrom(s, buffer, BUF_SIZE, 0, (struct sockaddr *) &client_address, &client_address_length) < 0) {
-			perror("recvfrom failure?");
-			exit(1);
-		}*/
-
-		printf("Received message no %d of size %d, i, size");
+		printf("Received message no %d of size %d", i, size);
 
 		i += 1;
 	}
