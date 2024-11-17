@@ -4,10 +4,11 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-const int BUFSIZE = 1024;
+#define BUFSIZE 1024
 
 int main(int argc, char **argv) {
-	int port, s;
+	char* host = "0.0.0.0";
+	int port = 8000, s;
 	int i = 1;
 	int size = 0;
 	struct sockaddr_in server;
@@ -15,9 +16,7 @@ int main(int argc, char **argv) {
 	socklen_t client_address_length = sizeof(client_address);
 	char buffer[BUFSIZE];
 
-	if (argc < 2) {
-		port = 8000;
-	} else {
+	if (argc >= 2) {
 		port = atoi(argv[1]);
 	}
 
@@ -35,8 +34,8 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 
-	i = 1;
-	size = 0;
+	printf("Listening on %s:%d\n", host, port);
+
 	while(1) {
 		if (recvfrom(s, buffer, BUFSIZE, 0, (struct sockaddr *)&client_address, &client_address_length) < 0) {
 			perror("recvfrom failure");
