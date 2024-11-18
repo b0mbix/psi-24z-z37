@@ -1,7 +1,8 @@
 import socket
 import sys
 
-HOST = 'z37_zadanie1_1_python_server'
+# HOST = 'z37_zadanie1_1_python_server'
+HOST = 'z37_zadanie1_1_c_server'
 size = 65500
 BUFSIZE = 1024
 port = 8000
@@ -20,7 +21,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
 
         s.sendto(datagram, (HOST, port))
 
-        data = s.recv(size)
+        data, _ = s.recvfrom(size)
         print(f"Successfully sent datagram of size {size}")
 
         size = size + 1

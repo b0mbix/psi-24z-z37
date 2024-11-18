@@ -16,7 +16,8 @@ int main(int argc, char **argv) {
 	int port = 8000, s;
 	int i;
 	int size = 65500;
-	char* server_hostname = "z37_zadanie1_1_python_server"; // "172.21.37.2";
+	// char* server_hostname = "z37_zadanie1_1_python_server";
+	char* server_hostname = "z37_zadanie1_1_c_server";
 	struct sockaddr_in server;
 	struct addrinfo hints, *res;
 	struct sockaddr_storage client_address;
