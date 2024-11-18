@@ -17,9 +17,9 @@ int main(int argc, char **argv) {
 	int i;
 	int size_index;
 	int size;
-	int sizes = {2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,40000,48000,56000,60000,64000,65000,65200,65400,65500,65502,65504,65505,65506,65507};
-	// char* server_hostname = "z37_zadanie1_1_python_server";
-	char* server_hostname = "z37_zadanie1_1_c_server";
+	int sizes[30] = {2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,40000,48000,56000,60000,64000,65000,65200,65400,65500,65502,65504,65505,65506,65507,65508};
+	char* server_hostname = "z37_zadanie1_1_python_server";
+	// char* server_hostname = "z37_zadanie1_1_c_server";
 	struct sockaddr_in server;
 	struct addrinfo hints, *res;
 	struct sockaddr_storage client_address;
