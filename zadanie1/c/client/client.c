@@ -1,64 +1,79 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <netdb.h>
 
-const int BUFSIZE = 1024;
+#define BUFSIZE 100000
+
+void handle_sigint(int sig) {
+        exit(0);
+}
 
 int main(int argc, char **argv) {
-	int port, s;
-	int i = 1;
-	int size = 0;
+	int port = 8000, s;
+	int i;
+	int size = 65500;
+	char* server_hostname = "z37_zadanie1_1_python_server"; // "172.21.37.2";
 	struct sockaddr_in server;
+	struct addrinfo hints, *res;
 	struct sockaddr_storage client_address;
-	socklen_t client_address_length = sizeof(client_address_length);
-	char ip[INET_ADDRSTRLEN];
+	socklen_t server_len; 
 	char buffer[BUFSIZE];
 
-	if (argc < 3) {
-		//perror("IP and port arguments expected!");
-		//exit(1);
-		strcpy(ip, "172.21.37.2");
-		port = 8000;
-	} else {
-		strcpy(ip, argv[1]);
-		printf("%s\n", ip);
+	if (argc >= 2) {
+		server_hostname = argv[1];
+	} if (argc >= 3) {
 		port = atoi(argv[2]);
 	}
 
+	// handle Ctrl+C
+        signal(SIGINT, handle_sigint);
+
 	if ((s = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-                perror("Socket failure?");
+                perror("Socket failure?\n");
                 exit(1);
 	}
 
-	server.sin_family = AF_INET;
-	if (inet_pton(AF_INET, ip, &server.sin_addr.s_addr) <= 0) {
-		perror("Ip failure?");
-		exit(1);
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_DGRAM;
+	if (getaddrinfo(server_hostname, NULL, &hints, &res) != 0) {
+		perror("Unknown host failure\n");
+		exit(0);
 	}
-	server.sin_port = port;
 
-	const char *message = "Hello world!";
-	uint16_t data_length = htons(strlen(message));
-	memcpy(buffer, &data_length, sizeof(uint16_t));
-	memcpy(buffer + sizeof(uint16_t), message, strlen(message));
+	server = *(struct sockaddr_in *)res->ai_addr;
+        server.sin_port = htons(port);
 
+	freeaddrinfo(res);
 
-	i = 1;
-	size = 2;
+	server_len = sizeof(server);
+	
+	printf("Starting client job...\n");
 	while(1) {
+		buffer[0] = (size >> 8) & 0xff;
+		buffer[1] = size & 0xff;
+		for (i=0; i<=size; i++) {
+			buffer[2+i] = 65 + i % 26;
+		}
 
-		if (sendto(s, buffer, sizeof(uint16_t) + strlen(message), 0, (struct sockaddr *)&server, sizeof(server)) < 0){
-			perror("sendto failure?");
+
+		if (sendto(s, buffer, size + 2, 0, (struct sockaddr *)&server, server_len) < 0){
+			perror("sendto failure?\n");
 			exit(1);
 		}
 
-		//recvfrom
+		int len = recvfrom(s, buffer, BUFSIZE, 0, (struct sockaddr *)&server, &server_len);
+        	if (len < 0) {
+            		perror("recvfrom failure?\n");
+           		exit(1);
+        	}
 
-		printf("Received message no %d of size %d", i, size);
-
-		i += 1;
+		printf("Successfully sent datagram of size %d\n", size+2);
+		size += 1;
 	}
 	close(s);
 }
