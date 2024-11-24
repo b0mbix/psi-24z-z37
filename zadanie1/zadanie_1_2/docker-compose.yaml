@@ -1,0 +1,20 @@
+version: "3.0"
+
+services:
+    python_client:
+        container_name: z37_zadanie1_2_python_client
+        build: ./client
+        tty: true
+        cap_add:
+          - NET_ADMIN
+        hostname: z37_zadanie1_2_python_client
+        network_mode: z37_network
+
+    python_server:
+        container_name: z37_zadanie1_2_python_server
+        build: ./server
+        tty: true
+        cap_add:
+          - NET_ADMIN
+        hostname: z37_zadanie1_2_python_server
+        network_mode: z37_network
