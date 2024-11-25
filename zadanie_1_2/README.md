@@ -1,4 +1,4 @@
-# Zadanie 1.1:
+# Zadanie 1.2:
 *Z37 - Aleksandra Szymańska, Angelika Ostrowska, Jakub Bąba*
 
 W tym folderze znajduje się rozwiązanie zadania 1.2 w języku Python, skrypty pomocnicze oraz dokumentacja.
