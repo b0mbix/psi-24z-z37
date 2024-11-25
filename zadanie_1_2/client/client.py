@@ -17,20 +17,22 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
     message_sent = 0
     message_successfully_sent = 0
     ack = 0
-    while(True):
-        ack ^= 1 #xor makes ack change between 0 and 1
+    while True:
+        # ack ^= 1    # xor makes ack change between 0 and 1
         msg_length = size - 3
         msg = ''.join([chr(65 + i % 26) for i in range(msg_length)])
-        datagram = ack.to_bytes(1, byteorder = 'big') + size.to_bytes(2, byteorder = 'big') + msg.encode('ascii')
+        datagram = ack.to_bytes(1, byteorder='big') + size.to_bytes(2, byteorder='big') + msg.encode('ascii')
 
         s.sendto(datagram, (HOST, port))
-
         message_sent += 1
 
-        data, _ = s.recvfrom(size)
-        while(data[0] - ord('0') != ack):
-            s.sendto(datagram, (HOST, port))
-            message_sent += 1
+        try:
+            s.settimeout(3)
             data, _ = s.recvfrom(size)
-        message_successfully_sent += 1
-        print(f"Successfully sent datagram no {message_successfully_sent} of size {size}. Sent total of {message_sent} messages.")
+            if data[0] - ord('0') == ack:
+                message_successfully_sent += 1
+                print(f"Successfully sent datagram no {message_successfully_sent} of size {size}. Sent total of {message_sent} messages.")
+            else:
+                print(f"There was an error with message no {message_sent}.")
+        except socket.timeout:
+            print(f"Timeout for message no {message_sent}.")
