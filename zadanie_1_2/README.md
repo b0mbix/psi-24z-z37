@@ -14,8 +14,7 @@ Ponadto w folderze zadania znajdują się pliki:
 ## Uruchomienie
 Uruchomienie kontenerów i rozpoczęcie komunikacji:
 ```
-docker compose build
-docker compose up
+docker compose up --build
 ```
 Dodanie zakłóceń
 ```
