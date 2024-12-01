@@ -1,4 +1,3 @@
-
 import socket
 import sys
 
@@ -8,21 +7,19 @@ port = 8000
 if len(sys.argv) >= 2:
     HOST = sys.argv[1]
 if len(sys.argv) >= 3:
-	port = int(sys.argv[2])
+        port = int(sys.argv[2])
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     print("Starting client job...")
 
     s.connect((HOST, port))
 
-    msg_length = 100000
+    msg_length = 1000000
     msg = ''.join([chr(65 + i % 26) for i in range(msg_length)])
     stream = msg.encode('ascii')
     s.sendall(stream)
+    s.sendall(b'DONE')
 
-    recv_size = 0
-    while recv_size != msg_length:
-        recv_size = int(s.recv(1024).decode('ascii'))
-        print(f'Server received {repr(recv_size)} bytes')
+    response = s.recv(1024).decode('ascii')
     s.close()
     print('Client finished.')
