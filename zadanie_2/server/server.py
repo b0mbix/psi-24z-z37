@@ -2,7 +2,7 @@ import socket
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
-HOST = '0.0.0.0' #'z37_zadanie2_python_server'
+HOST = '0.0.0.0' #'z37_zadanie2_server'
 BUFSIZE = 1024
 port = 8000
 

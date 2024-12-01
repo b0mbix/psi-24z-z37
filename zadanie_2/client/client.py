@@ -1,7 +1,7 @@
 import socket
 import sys
 
-HOST = 'z37_zadanie2_python_server'
+HOST = 'z37_zadanie2_server'
 port = 8000
 
 if len(sys.argv) >= 2:

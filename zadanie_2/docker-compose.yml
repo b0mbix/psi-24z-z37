@@ -20,7 +20,9 @@ services:
       - NET_ADMIN
     networks:
       - z37_network
-  
+    depends_on:
+      - server
+ 
   client2:
     container_name: z37_zadanie2_client2
     hostname: z37_zadanie2_client2
@@ -30,7 +32,9 @@ services:
       - NET_ADMIN
     networks:
       - z37_network
-  
+    depends_on:
+      - server
+ 
   client3:
     container_name: z37_zadanie2_client3
     hostname: z37_zadanie2_client3
@@ -40,6 +44,8 @@ services:
       - NET_ADMIN
     networks:
       - z37_network
+    depends_on:
+      - server
 
 networks:
   z37_network:
