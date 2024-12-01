@@ -18,9 +18,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     msg_length = 100000
     msg = ''.join([chr(65 + i % 26) for i in range(msg_length)])
     stream = msg.encode('ascii')
-
     s.sendall(stream)
 
-    data = s.recv(1024)
-    print('Received', repr(data))
+    recv_size = 0
+    while recv_size != msg_length:
+        recv_size = int(s.recv(1024).decode('ascii'))
+        print(f'Server received {repr(recv_size)} bytes')
+    s.close()
     print('Client finished.')

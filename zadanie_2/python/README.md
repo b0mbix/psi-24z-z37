@@ -9,6 +9,6 @@ W folderze klienta/serwera znajdują się:
 - skrypt run.sh uruchamiający klienta/serwer
 
 ## Uruchomienie
-Aby uruchomić programy z serwerami/klientami, należy wpisać komendę `bash run` w odpowiednich folderach:
+Aby uruchomić programy z serwerami/klientami, należy wpisać komendę `./run.sh` w odpowiednich folderach:
 - Serwer: `zadanie2/server`
 - Klient: `zadanie2/client`
