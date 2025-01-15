@@ -24,7 +24,8 @@ msg_content = ''.join([chr(65 + i % 26) for i in range(msg_length)])
 endsession_msg = f'EndSession'
 
 def construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=None):
-    encrypted_msg_content = encrypt_message(msg_content, generate_otp(session_key, msg_no, len(msg_c>    mac = hmac.new(session_key, encrypted_msg_content, hashlib.sha256).digest()
+    encrypted_msg_content = encrypt_message(msg_content, generate_otp(session_key, msg_no, len(msg_content)))
+    mac = hmac.new(session_key, encrypted_msg_content, hashlib.sha256).digest()
     if msg_prefix:
         return msg_prefix + encrypted_msg_content + '|' + mac
     else:
