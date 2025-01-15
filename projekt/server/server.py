@@ -34,6 +34,7 @@ def serve_client(conn, addr, thread_no):
                         received_base = int(data[1])
                         received_module = int(data[2])
                         public_key = (received_base ** private_key) % received_module
+                        #TODO Session key
                         hello_msg = f"ServerHello|{public_key}"
                         conn.sendall(hello_msg.encode('ascii'))
                         print(f"Hello success")
@@ -51,19 +52,22 @@ def serve_client(conn, addr, thread_no):
                         msg += data
                         msg_len += len(data)
                         if (expected_msg_len == -1):
-                                expected_msg_len = int(data.decode('ascii').split("|")[0])
+                                expected_msg_len = int.from_bytes(msg[:2], byteorder='big')
+
 
                         print(f"Received {msg_len} bytes in total from thread {thread_no}")
-                        if msg_len == expected_msg_len:
+                        if msg_len == expected_msg_len + 36:
                                 print(f"Received whole message from thread {thread_no}")
+                                print(f"Message: {msg[2:-32]}")
                                 break
-                # CHECKING MAC
-                expected_mac = int(msg.decode("ascii").split("|")[-1])
-                mac = -1 # ... obliczenia
-                if (mac == expected_mac):
-                        print(f"Checked message integrity and authenticity")
 
-                #conn.close()
+                # CHECKING MAC
+                #expected_mac = msg[-32:].decode("ascii")
+                #mac = -1 # ... obliczenia
+                #if (mac == expected_mac):
+                #        print(f"Message integrity and authenticity confirmed")
+
+                conn.close()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, port))
