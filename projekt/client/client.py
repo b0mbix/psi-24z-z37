@@ -24,8 +24,7 @@ msg_content = ''.join([chr(65 + i % 26) for i in range(msg_length)])
 endsession_msg = f'EndSession'
 
 def construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=None):
-    encrypted_msg_content = encrypt_message(msg_content, generate_otp(session_key, msg_no, len(msg_content)))
-    mac = hmac.new(session_key, encrypted_msg_content, hashlib.sha256).digest()
+    encrypted_msg_content = encrypt_message(msg_content, generate_otp(session_key, msg_no, len(msg_c>    mac = hmac.new(session_key, encrypted_msg_content, hashlib.sha256).digest()
     if msg_prefix:
         return msg_prefix + encrypted_msg_content + '|' + mac
     else:
@@ -48,11 +47,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.sendall(hello_msg.encode('ascii'))
 
     response = s.recv(1024).decode('ascii')
-    print(response)
 
     parts = response.split('|')
-    if parts[0] == 'ServerHello':
-        server_public_key = parts[1]
+    if parts[0] != 'ServerHello':
+        s.close()
+    server_public_key = int(parts[1])
     session_key = (server_public_key ** private_key) % module
 
     s.close()
