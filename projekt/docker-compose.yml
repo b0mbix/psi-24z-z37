@@ -2,8 +2,8 @@ version: "3.0"
 
 services:
   server:
-    container_name: z37_zadanie2_server
-    hostname: z37_zadanie2_server
+    container_name: z37_projekt_server
+    hostname: z37_projekt_server
     build: ./server
     tty: true
     cap_add:
@@ -12,8 +12,8 @@ services:
       - z37_network
   
   client1:
-    container_name: z37_zadanie2_client1
-    hostname: z37_zadanie2_client1
+    container_name: z37_projekt_client1
+    hostname: z37_projekt_client1
     build: ./client
     tty: true
     cap_add:
@@ -24,8 +24,8 @@ services:
       - server
  
   client2:
-    container_name: z37_zadanie2_client2
-    hostname: z37_zadanie2_client2
+    container_name: z37_projekt_client2
+    hostname: z37_projekt_client2
     build: ./client
     tty: true
     cap_add:
@@ -36,8 +36,8 @@ services:
       - server
  
   client3:
-    container_name: z37_zadanie2_client3
-    hostname: z37_zadanie2_client3
+    container_name: z37_projekt_client3
+    hostname: z37_projekt_client3
     build: ./client
     tty: true
     cap_add:
