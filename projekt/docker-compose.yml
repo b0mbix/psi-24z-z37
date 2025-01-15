@@ -1,0 +1,53 @@
+version: "3.0"
+
+services:
+  server:
+    container_name: z37_zadanie2_server
+    hostname: z37_zadanie2_server
+    build: ./server
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - z37_network
+  
+  client1:
+    container_name: z37_zadanie2_client1
+    hostname: z37_zadanie2_client1
+    build: ./client
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - z37_network
+    depends_on:
+      - server
+ 
+  client2:
+    container_name: z37_zadanie2_client2
+    hostname: z37_zadanie2_client2
+    build: ./client
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - z37_network
+    depends_on:
+      - server
+ 
+  client3:
+    container_name: z37_zadanie2_client3
+    hostname: z37_zadanie2_client3
+    build: ./client
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - z37_network
+    depends_on:
+      - server
+
+networks:
+  z37_network:
+    external: true
+
