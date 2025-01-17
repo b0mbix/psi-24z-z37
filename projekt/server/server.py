@@ -90,11 +90,11 @@ def serve_client(conn, addr, thread_no):
 
             parts = data.split(b'|')
             # Detect start of new message (then first 2 bytes are message size)
-            if type(parts[0].decode('ascii')) == int:
-                print(f"New message {data} from thread {thread_no}")
+            if type(int.from_bytes(parts[0], "big")) == int:
+                print(f"Received new message {data} from thread {thread_no}")
                 msg = b''
                 msg_len = 0
-                expected_msg_len = int(data[:2].decode('ascii'))
+                expected_msg_len = int.from_bytes(parts[0], "big")
 
                 msg += data[2:]
                 msg_len += len(data[2:])
@@ -121,7 +121,7 @@ def serve_client(conn, addr, thread_no):
                     break
             # End session
             else:
-                print(f"Endsession {data} from thread {thread_no}")
+                print(f"Received endsession {data} from thread {thread_no}")
 
                 msg_content = parts[0]
                 mac = parts[1]
