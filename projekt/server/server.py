@@ -146,14 +146,15 @@ def handle_commands():
     print("close <thread_no> - close connection for thread <thread_no>")
     print("active - show active connections")
     print("exit - exit server")
+    print("")
     while True:
-        command = input("Enter command (close <thread_no>): ")
         if command == "help":
             print("Commands:")
             print("help - show this message")
             print("close <thread_no> - close connection for thread <thread_no>")
             print("active - show active connections")
             print("exit - exit server")
+            print("")
         elif command.startswith("close"):
             _, thread_no = command.split()
             thread_no = int(thread_no)
