@@ -52,7 +52,7 @@ private_key = 4
 public_key = calculate_public_key(base, private_key, module)
 
 hello_msg = f'ClientHello|{base}|{module}|{public_key}'
-msg_length = 2000
+msg_length = 50
 msg_prefix = f'{msg_length}|'
 msg_content = ''.join([chr(65 + i % 26) for i in range(msg_length)])
 endsession_msg = f'EndSession'
@@ -92,8 +92,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     response = s.recv(1024).decode('ascii')
     print(response)
 
-    #break_connection(s, session_key, msg_no)
-    #response = s.recv(1024).decode('ascii')
-    #print(response)
+    break_connection(s, session_key, msg_no)
+    response = s.recv(1024).decode('ascii')
+    print(response)
 
     s.close()

@@ -92,7 +92,7 @@ def serve_client(conn, addr, thread_no):
             parts = data.split(b'|')
             # Detect start of new message (then first 2 bytes are message size)
             if type(int.from_bytes(parts[0], "big")) == int:
-                print(f"Received new message {data} from thread {thread_no}")
+                # print(f"Received new message {data} from thread {thread_no}")
                 msg = b''
                 msg_len = 0
                 expected_msg_len = int.from_bytes(parts[0], "big")
@@ -102,7 +102,7 @@ def serve_client(conn, addr, thread_no):
 
                 # Message exceeded buffer and came in multiple parts
                 while ( msg_len < expected_msg_len + msg_len_addition ):
-                    print("Received message part")
+                    # print("Received message part")
                     data = conn.recv( BUFSIZE )
                     msg += data
                     msg_len += len(data)
