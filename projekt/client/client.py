@@ -73,12 +73,11 @@ def connect_to_server(s):
 def send_message(s, session_key, msg_no):
     encrypted_msg = construct_encrypted_message(session_key, msg_no, msg_content, msg_length_prefix=msg_length)
     s.sendall(encrypted_msg)
-    print(f"Encrypted message sent: {encrypted_msg}")
+    print(f"Encrypted {msg_content} message sent.")
 
 def break_connection(s, session_key, msg_no):
     encrypted_end_session = construct_encrypted_message(session_key, msg_no, endsession_msg)
     s.sendall(encrypted_end_session)
-    print(encrypted_end_session)
     print("Encrypted EndSession message sent.")
 
 def handle_response(s):
@@ -96,11 +95,17 @@ def interactive_client(s, session_key):
         if choice == "1":
             send_message(s, session_key, msg_no)
             response = s.recv(1024).decode('ascii')
+            if not response:
+                print("Server has closed the connection.")
+                break
             print(f"Server response: {response}")
             msg_no += 1
         elif choice == "2":
             break_connection(s, session_key, msg_no)
             response = s.recv(1024).decode('ascii')
+            if not response:
+                print("Server has closed the connection.")
+                break
             print(f"Server response: {response}")
             print("Closing connection.")
             break
