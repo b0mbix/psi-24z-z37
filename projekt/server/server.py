@@ -101,7 +101,6 @@ def serve_client(conn, addr, thread_no):
                 msg_len += len(data[2:])
 
                 # Message exceeded buffer and came in multiple parts
-                print(f"Real: {msg_len} <? Expected: {expected_msg_len + msg_len_addition}")
                 while ( msg_len < expected_msg_len + msg_len_addition ):
                     data = conn.recv( BUFSIZE )
                     msg += data
@@ -110,8 +109,6 @@ def serve_client(conn, addr, thread_no):
                 # Encoded message without mac
                 msg_content = msg[1:-33]
                 mac = msg[-32:]
-                print(f"Msg content: {msg_content}")
-                print(f"Mac: {mac}")
                 if verify_mac(msg_content, mac, session_key):
                     print(f"Message integrity and authenticity confirmed")
                     otp = generate_otp(session_key, msg_no, len(msg_content))
@@ -128,7 +125,6 @@ def serve_client(conn, addr, thread_no):
 
                 msg_content = parts[0]
                 mac = parts[1]
-                print(f"Mac: {mac}")
                 if verify_mac(msg_content, mac, session_key):
                     print(f"Message integrity and authenticity confirmed")
                     otp = generate_otp(session_key, msg_no, len(msg_content))
