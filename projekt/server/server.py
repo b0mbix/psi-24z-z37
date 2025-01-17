@@ -108,7 +108,7 @@ def serve_client(conn, addr, thread_no):
                     msg_len += len(data)
 
                 # Encoded message without mac
-                msg_content = msg[:-32]
+                msg_content = msg[1:-33]
                 mac = msg[-32:]
                 print(f"Msg content: {msg_content}")
                 print(f"Mac: {mac}")
