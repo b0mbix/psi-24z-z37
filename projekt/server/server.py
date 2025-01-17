@@ -100,6 +100,7 @@ def serve_client(conn, addr, thread_no):
                 msg_len += len(data[2:])
 
                 # Message exceeded buffer and came in multiple parts
+                print(f"Real: {msg_len} <? Expected: {expected_msg_len + 41}")
                 while ( msg_len < expected_msg_len + 41 ):
                     data = conn.recv( BUFSIZE )
                     msg += data
