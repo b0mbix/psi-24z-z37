@@ -91,12 +91,12 @@ def serve_client(conn, addr, thread_no):
 
             parts = data.split(b'|')
             otp = generate_otp(session_key, msg_no, 10)
-            decrypted_msg_content = decrypt_message(data[:11], otp)
+            decrypted_msg_content = decrypt_message(data[:10], otp)
             if decrypted_msg_content == 'EndSession':
                 print(f"Received EndSession {data} from thread {thread_no}")
 
                 mac = data[-32:]
-                if verify_mac(msg_content, mac, session_key):
+                if verify_mac(data[:10], mac, session_key):
                     print(f"Message integrity and authenticity confirmed")
                     otp = generate_otp(session_key, msg_no, len(msg_content))
                     decrypted_msg_content = decrypt_message(msg_content, otp)
@@ -108,7 +108,7 @@ def serve_client(conn, addr, thread_no):
                     print(f"Message integrity and authenticity compromised")
                     break
             else:
-                # print(f"Received new message {data} from thread {thread_no}")
+                print(f"Received new message {data} from thread {thread_no}")
                 msg = b''
                 msg_len = 0
                 expected_msg_len = int.from_bytes(parts[0], "big")
