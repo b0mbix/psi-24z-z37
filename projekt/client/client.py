@@ -30,10 +30,10 @@ def decrypt_message(encrypted_message, otp):
     return ''.join(chr(byte ^ otp[i]) for i, byte in enumerate(encrypted_message))
 
 def construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=None):
-    session_key_bytes = str(session_key).encode('ascii')
+    mac_key_bytes = (str(session_key) + str(msg_no)).encode('ascii')
     otp = generate_otp(session_key, msg_no, len(msg_content))
     encrypted_msg_content = encrypt_message(msg_content, otp)
-    mac = hmac.new(session_key_bytes, encrypted_msg_content, hashlib.sha256).digest()
+    mac = hmac.new(mac_key_bytes, encrypted_msg_content, hashlib.sha256).digest()
 
     if msg_prefix:
         prefix = msg_prefix.encode('ascii')
@@ -41,9 +41,9 @@ def construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=Non
     else:
         return encrypted_msg_content + b'|' + mac
 
-def verify_mac(received_message, received_mac, session_key):
-    session_key_bytes = str(session_key).encode('ascii')
-    computed_mac = hmac.new(session_key_bytes, received_message, hashlib.sha256).digest()
+def verify_mac(received_message, received_mac, session_key, msg_no):
+    mac_key_bytes = (str(session_key) + str(msg_no)).encode('ascii')
+    computed_mac = hmac.new(mac_key_bytes, received_message, hashlib.sha256).digest()
     return computed_mac == received_mac
 
 module = 23
