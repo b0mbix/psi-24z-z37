@@ -164,7 +164,7 @@ def handle_commands():
             else:
                 print(f"No active connection for thread {thread_no}")
         elif command == "active":
-            print(f"Active connections: {" ".join(list(active_connections.keys()))}")
+            print(f"Active connections: {' '.join(map(str, active_connections.keys()))} ")
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
