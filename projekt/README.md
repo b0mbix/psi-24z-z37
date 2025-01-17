@@ -9,7 +9,7 @@ W folderze klienta/serwera znajdują się:
 - skrypt run.sh uruchamiający klienta/serwer
 
 ## Uruchomienie
-Aby przygotować z serwerami/klientami, należy wpisać komendę:
+Aby przygotować kontenery z serwerami/klientami, należy wpisać komendę:
 ```
 docker compose up --build -d
 ```
@@ -23,7 +23,6 @@ W tym oknie uruchamia się interaktywna sesja serwera, na której można wpisać
 help                <--- wypisuje dostępne komendy
 close <thread_no>   <--- zamyka połączenie z klientem o podanym numerze
 active              <--- pokazuje aktywne połączenia
-exit                <--- wyłącza serwer
 ```
 
 W innych oknach można uruchomić klientów wpisując komendę:
