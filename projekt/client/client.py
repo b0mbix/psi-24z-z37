@@ -52,7 +52,7 @@ private_key = 4
 public_key = calculate_public_key(base, private_key, module)
 
 hello_msg = f'ClientHello|{base}|{module}|{public_key}'
-msg_length = 50
+msg_length = 5
 msg_prefix = f'{msg_length}|'
 msg_content = ''.join([chr(65 + i % 26) for i in range(msg_length)])
 endsession_msg = f'EndSession'
@@ -84,17 +84,33 @@ def break_connection(s, session_key, msg_no):
 def handle_response(s):
     pass
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    print("Starting client job...")
-    session_key = connect_to_server(s)
 
+def interactive_client(s, session_key):
     msg_no = 1
-    send_message(s, session_key, msg_no)
-    response = s.recv(1024).decode('ascii')
-    print(response)
+    while True:
+        print("\nChoose an action:")
+        print("1. Send a message")
+        print("2. Close the connection")
+        choice = input("Enter your choice: ").strip()
 
-    break_connection(s, session_key, msg_no)
-    response = s.recv(1024).decode('ascii')
-    print(response)
+        if choice == "1":
+            send_message(s, session_key, msg_no)
+            response = s.recv(1024).decode('ascii')
+            print(f"Server response: {response}")
+            msg_no += 1
+        elif choice == "2":
+            break_connection(s, session_key, msg_no)
+            response = s.recv(1024).decode('ascii')
+            print(f"Server response: {response}")
+            print("Closing connection.")
+            break
+        else:
+            print("Invalid choice. Please try again.")
 
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    print("Starting client...")
+    session_key = connect_to_server(s)
+    interactive_client(s, session_key)
     s.close()
+    print("Client terminated.")
