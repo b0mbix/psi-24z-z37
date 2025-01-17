@@ -145,7 +145,6 @@ def handle_commands():
     print("help - show this message")
     print("close <thread_no> - close connection for thread <thread_no>")
     print("active - show active connections")
-    print("exit - exit server")
     print("")
     while True:
         command = input("")
@@ -154,7 +153,6 @@ def handle_commands():
             print("help - show this message")
             print("close <thread_no> - close connection for thread <thread_no>")
             print("active - show active connections")
-            print("exit - exit server")
             print("")
         elif command.startswith("close"):
             _, thread_no = command.split()
@@ -166,10 +164,7 @@ def handle_commands():
             else:
                 print(f"No active connection for thread {thread_no}")
         elif command == "active":
-            print(f"Active connections: {active_connections.keys()}")
-        elif command == "exit":
-            print("Exiting...")
-            sys.exit(0)
+            print(f"Active connections: {" ".join(list(active_connections.keys()))}")
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
