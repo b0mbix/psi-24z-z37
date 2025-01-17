@@ -140,9 +140,21 @@ def serve_client(conn, addr, thread_no):
 
 
 def handle_commands():
+    print("Command handler started...")
+    print("Commands:")
+    print("help - show this message")
+    print("close <thread_no> - close connection for thread <thread_no>")
+    print("active - show active connections")
+    print("exit - exit server")
     while True:
         command = input("Enter command (close <thread_no>): ")
-        if command.startswith("close"):
+        if command == "help":
+            print("Commands:")
+            print("help - show this message")
+            print("close <thread_no> - close connection for thread <thread_no>")
+            print("active - show active connections")
+            print("exit - exit server")
+        elif command.startswith("close"):
             _, thread_no = command.split()
             thread_no = int(thread_no)
             if thread_no in active_connections:
@@ -151,9 +163,11 @@ def handle_commands():
                 active_connections.pop(thread_no)
             else:
                 print(f"No active connection for thread {thread_no}")
+        elif command == "active":
+            print(f"Active connections: {active_connections.keys()}")
         elif command == "exit":
-            print("Exiting command handler...")
-            break
+            print("Exiting...")
+            sys.exit(0)
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

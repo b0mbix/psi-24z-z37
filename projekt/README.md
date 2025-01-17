@@ -20,7 +20,10 @@ docker compose exec server python3 server.py [PORT=8000] [MAX_POŁĄCZEŃ=5]
 ```
 W tym oknie uruchamia się interaktywna sesja serwera, na której można wpisać komendy:
 ```
+help                <--- wypisuje dostępne komendy
 close <thread_no>   <--- zamyka połączenie z klientem o podanym numerze
+active              <--- pokazuje aktywne połączenia
+exit                <--- wyłącza serwer
 ```
 
 W innych oknach można uruchomić klientów wpisując komendę:
