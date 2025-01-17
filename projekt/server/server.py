@@ -89,7 +89,6 @@ def serve_client(conn, addr, thread_no):
                 print(f"Connection from thread {thread_no} closed?")
                 break
 
-            parts = data.split(b'|')
             otp = generate_otp(session_key, msg_no, 10)
             decrypted_msg_content = decrypt_message(data[:10], otp)
             if decrypted_msg_content == 'EndSession':
@@ -106,7 +105,7 @@ def serve_client(conn, addr, thread_no):
             else:
                 msg = b''
                 msg_len = 0
-                expected_msg_len = int.from_bytes(parts[0], "big")
+                expected_msg_len = int.from_bytes(data[:2], "big")
 
                 msg += data[2:]
                 msg_len += len(data[2:])
