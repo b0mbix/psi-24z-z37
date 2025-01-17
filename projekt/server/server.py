@@ -23,10 +23,10 @@ def decrypt_message(encrypted_message, otp):
     return ''.join(chr(byte ^ otp[i]) for i, byte in enumerate(encrypted_message))
 
 def construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=None):
-    mac_key_bytes = (str(session_key) + str(msg_no)).encode('ascii')
+    session_key_bytes = str(session_key).encode('ascii')
     otp = generate_otp(session_key, msg_no, len(msg_content))
     encrypted_msg_content = encrypt_message(msg_content, otp)
-    mac = hmac.new(mac_key_bytes, encrypted_msg_content, hashlib.sha256).digest()
+    mac = hmac.new(session_key_bytes, encrypted_msg_content, hashlib.sha256).digest()
 
     if msg_prefix:
         prefix = msg_prefix.encode('ascii')
@@ -34,9 +34,9 @@ def construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=Non
     else:
         return encrypted_msg_content + b'|' + mac
 
-def verify_mac(received_message, received_mac, session_key, msg_no):
-    mac_key_bytes = (str(session_key) + str(msg_no)).encode('ascii')
-    computed_mac = hmac.new(mac_key_bytes, received_message, hashlib.sha256).digest()
+def verify_mac(received_message, received_mac, session_key):
+    session_key_bytes = str(session_key).encode('ascii')
+    computed_mac = hmac.new(session_key_bytes, received_message, hashlib.sha256).digest()
     return computed_mac == received_mac
 
 HOST = '0.0.0.0' #'z37_projekt_server'
@@ -96,7 +96,7 @@ def serve_client(conn, addr, thread_no):
                     print(msg_content)
                     mac = parts[1]
                     print(mac)
-                    if verify_mac(msg_content, mac, session_key, msg_no):
+                    if verify_mac(msg_content, mac, session_key):
                         print(f"Message integrity and authenticity confirmed")
                         otp = generate_otp(session_key, msg_no, len(msg_content))
                         print(otp)
@@ -119,7 +119,7 @@ def serve_client(conn, addr, thread_no):
                     msg_len = len(msg_content)
                     expected_msg_len = int(msg_prefix.decode('ascii'))
                     mac = parts[2]
-                    if verify_mac(msg_content, mac, session_key, msg_no):
+                    if verify_mac(msg_content, mac, session_key):
                         print(f"Message integrity and authenticity confirmed")
                         otp = generate_otp(session_key, msg_no, len(msg_content))
                         decrypted_msg_content = decrypt_message(msg_content, otp)
