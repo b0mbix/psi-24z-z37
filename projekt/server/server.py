@@ -44,6 +44,7 @@ BUFSIZE = 1024
 port = 8000
 max_connections = 5
 private_key = 3
+msg_len_addition = 41
 
 if len(sys.argv) >= 2:
     port = int(sys.argv[1])
@@ -100,8 +101,8 @@ def serve_client(conn, addr, thread_no):
                 msg_len += len(data[2:])
 
                 # Message exceeded buffer and came in multiple parts
-                print(f"Real: {msg_len} <? Expected: {expected_msg_len + 41}")
-                while ( msg_len < expected_msg_len + 41 ):
+                print(f"Real: {msg_len} <? Expected: {expected_msg_len + msg_len_addition}")
+                while ( msg_len < expected_msg_len + msg_len_addition ):
                     data = conn.recv( BUFSIZE )
                     msg += data
                     msg_len += len(data)
