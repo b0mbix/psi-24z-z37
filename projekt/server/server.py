@@ -134,11 +134,9 @@ def serve_client(conn, addr, thread_no):
                     conn.sendall("got it".encode('ascii'))
                     continue
                 else:
-                    print(f"Message integrity and authenticity compromised")
+                    print("Message integrity and authenticity compromised")
                     break
-            # End session
-            else:
-                
+
         conn.close()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
