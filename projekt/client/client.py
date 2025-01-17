@@ -65,15 +65,22 @@ def connect_to_server(s):
     if len(parts) == 2:
         if parts[0] != 'ServerHello':
             s.close()
+    print(f"Connected to {HOST}:{port}")
     server_public_key = int(parts[1])
     session_key = calculate_session_key(server_public_key, private_key, module)
-
     return session_key
 
-def send_message():
-    pass
+def send_message(s, session_key, msg_no):
+    encrypted_msg = construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=f'{msg_length}|')
+    s.sendall(encrypted_msg)
+    print(f"Encrypted message sent: {encrypted_msg}")
 
-def break_connection():
+def break_connection(s, session_key, msg_no):
+    encrypted_end_session = construct_encrypted_message(session_key, msg_no, endsession_msg)
+    s.sendall(encrypted_end_session)
+    print("Encrypted EndSession message sent.")
+
+def handle_response(s):
     pass
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -81,19 +88,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     session_key = connect_to_server(s)
 
     msg_no = 1
-    encrypted_msg = construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=f'{msg_length}|')
-    s.sendall(encrypted_msg)
-    print(f"Encrypted message sent: {encrypted_msg}")
+    send_message(s, session_key, msg_no)
+    response = s.recv(1024).decode('ascii')
+    print(response)
 
-    #response2 = s.recv(1024)
-    #print(response2)
-
-    #msg_no = 1
-    #encrypted_end_session = construct_encrypted_message(session_key, msg_no, endsession_msg)
-    #s.sendall(encrypted_end_session)
-    #print("EndSession message sent.")
-
-    response3 = s.recv(1024)
-    print(response3)
+    #break_connection(s, session_key, msg_no)
+    response = s.recv(1024).decode('ascii')
+    print(response)
 
     s.close()
