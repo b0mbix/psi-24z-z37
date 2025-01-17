@@ -57,19 +57,28 @@ msg_prefix = f'{msg_length}|'
 msg_content = ''.join([chr(65 + i % 26) for i in range(msg_length)])
 endsession_msg = f'EndSession'
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    print("Starting client job...")
+def connect_to_server(s):
     s.connect((HOST, port))
-
     s.sendall(hello_msg.encode('ascii'))
-
     response = s.recv(1024).decode('ascii')
-
     parts = response.split('|')
-    if parts[0] != 'ServerHello':
-        s.close()
+    if len(parts) == 2:
+        if parts[0] != 'ServerHello':
+            s.close()
     server_public_key = int(parts[1])
     session_key = calculate_session_key(server_public_key, private_key, module)
+
+    return session_key
+
+def send_message():
+    pass
+
+def break_connection():
+    pass
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    print("Starting client job...")
+    session_key = connect_to_server(s)
 
     msg_no = 1
     encrypted_msg = construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=f'{msg_length}|')
