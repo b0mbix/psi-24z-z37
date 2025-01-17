@@ -75,7 +75,8 @@ def serve_client(conn, addr, thread_no):
         client_public_key = int(parts[3])
         public_key = calculate_public_key(received_base, private_key, received_module)
         session_key = calculate_session_key(client_public_key, private_key, received_module)
-        hello_msg = f"ServerHello|{public_key}"
+        hello_msg = f"sent ServerHello|{public_key}"
+        print(hello_msg)
         conn.sendall(hello_msg.encode('ascii'))
         print(f"Hello success")
 
