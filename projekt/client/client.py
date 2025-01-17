@@ -10,13 +10,13 @@ port = 8000
 if len(sys.argv) >= 2:
     HOST = sys.argv[1]
 if len(sys.argv) >= 3:
-        port = int(sys.argv[2])
+    port = int(sys.argv[2])
 
 def calculate_public_key(base, private_key, module):
-    (base ** private_key) % module
+    return (base ** private_key) % module
 
 def calculate_session_key(foreign_public_key, own_private_key, module):
-    (foreign_public_key ** own_private_key) % module
+    return (foreign_public_key ** own_private_key) % module
 
 def generate_otp(session_key, msg_no, msg_len):
     seed = session_key + msg_no
@@ -76,9 +76,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.sendall(encrypted_msg)
     print(f"Encrypted message sent: {encrypted_msg}")
 
-    msg_no = 2
-    encrypted_end_session = construct_encrypted_message(session_key, msg_no, endsession_msg)
-    s.sendall(encrypted_end_session)
-    print("EndSession message sent.")
+    #response2 = s.recv(1024)
+    #print(response2)
+
+    #msg_no = 1
+    #encrypted_end_session = construct_encrypted_message(session_key, msg_no, endsession_msg)
+    #s.sendall(encrypted_end_session)
+    #print("EndSession message sent.")
+
+    response3 = s.recv(1024)
+    print(response3)
 
     s.close()

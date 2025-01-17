@@ -6,10 +6,10 @@ import hashlib
 import random
 
 def calculate_public_key(base, private_key, module):
-    (base ** private_key) % module
+    return (base ** private_key) % module
 
 def calculate_session_key(foreign_public_key, own_private_key, module):
-    (foreign_public_key ** own_private_key) % module
+    return (foreign_public_key ** own_private_key) % module
 
 def generate_otp(session_key, msg_no, msg_len):
     seed = session_key + msg_no
@@ -66,19 +66,21 @@ def serve_client(conn, addr, thread_no):
         print(f"Received {data} fron {thread_no}")
         data = data.decode('ascii')
 
-        if data[:11] == 'ClientHello':
-            parts = data.split("|")
-            received_base = int(parts[1])
-            received_module = int(parts[2])
-            client_public_key = int(parts[3])
-            public_key = calculate_public_key(received_base, private_key, received_module)
-            session_key = calculate_session_key(client_public_key, private_key, received_module)
-            hello_msg = f"ServerHello|{public_key}"
-            conn.sendall(hello_msg.encode('ascii'))
-            print(f"Hello success")
+        if (data[:11] != 'ClientHello'):
+            print(f"No introductory message")
+            conn.close()
+        parts = data.split('|')
+        received_base = int(parts[1])
+        received_module = int(parts[2])
+        client_public_key = int(parts[3])
+        public_key = calculate_public_key(received_base, private_key, received_module)
+        session_key = calculate_session_key(client_public_key, private_key, received_module)
+        hello_msg = f"ServerHello|{public_key}"
+        conn.sendall(hello_msg.encode('ascii'))
+        print(f"Hello success")
 
         # HANDLING TARGET MESSAGE
-        msg_content = ''
+        msg_content = b''
         msg_len = 0
         msg_no = 1
         expected_msg_len = -1
@@ -87,36 +89,50 @@ def serve_client(conn, addr, thread_no):
             if not data:
                 print(f"Connection from thread {thread_no} closed?")
                 break
-
             if expected_msg_len == -1:
-                msg_prefix = data.decode('ascii')
-                parts = msg_prefix.split("|")
-                if len(parts[0]) == 10:
-                    if parts[0] == 'EndSession':
-                        print(f"Received EndSession message from {thread_no}")
-                        break
-                expected_msg_len = parts[0]
-                msg_content += parts[1]
-                msg_len += len(msg_content)
-                print(expected_msg_len)
-                print(f"Received {msg_len} bytes in total from thread {thread_no}")
-
-            else:
-                msg_content += data.decode('ascii')
-                if msg_len == expected_msg_len + 34 + len(str(expected_msg_len)):
-                    print(f"Received whole message from thread {thread_no}")
-                    mac = msg_content[:-32]
-                    msg_content = msg_content[:-33]
+                parts = data.split(b'|')
+                if len(parts) == 2:
+                    msg_content = parts[0]
+                    print(msg_content)
+                    mac = parts[1]
+                    print(mac)
                     if verify_mac(msg_content, mac, session_key):
                         print(f"Message integrity and authenticity confirmed")
                         otp = generate_otp(session_key, msg_no, len(msg_content))
-                        encrypted_msg_content = decrypt_message(msg_content[:-1], msg_no, len(msg_content))
-                        print(f"Received message content: {encrypted_msg_content} from {thread_no}")
+                        print(otp)
+                        decrypted_msg_content = decrypt_message(msg_content, otp)
+                        print(decrypted_msg_content)
+                        if decrypted_msg_content == 'EndSession':
+                            print(f"Received EndSession message from {thread_no}")
+                            break
+                    else:
+                        print(f"Message integrity and authenticity compromised")
+                        break
+                    #else:
+                    #    msg_prefix = parts[0]
+                    #    msg_content += parts[1]
+                    #    msg_len = len(msg_content)
+                    #    expected_msg_len = int(msg_prefix.decode('ascii'))
+                else:
+                    msg_prefix = parts[0]
+                    msg_content += parts[1]
+                    msg_len = len(msg_content)
+                    expected_msg_len = int(msg_prefix.decode('ascii'))
+                    mac = parts[2]
+                    if verify_mac(msg_content, mac, session_key):
+                        print(f"Message integrity and authenticity confirmed")
+                        otp = generate_otp(session_key, msg_no, len(msg_content))
+                        decrypted_msg_content = decrypt_message(msg_content, otp)
+                        print(f"Received message content: {decrypted_msg_content} from {thread_no}")
+                        conn.sendall("got it".encode('ascii'))
                         break
                     else:
                         print(f"Message integrity and authenticity compromised")
                         break
-
+            #else:
+            #    msg_content += data
+            #    msg_len = len(msg_content)
+            #if msg_len >= expected_msg_len + len(str(expected_msg_len)) + 34: ???
         conn.close()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -134,4 +150,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             executor.shutdown()
         except:
             ("Exiting manually...")
-        
+            
