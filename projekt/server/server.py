@@ -44,7 +44,7 @@ BUFSIZE = 1024
 port = 8000
 max_connections = 5
 private_key = 3
-msg_len_addition = 41
+msg_len_addition = 34
 
 if len(sys.argv) >= 2:
     port = int(sys.argv[1])
