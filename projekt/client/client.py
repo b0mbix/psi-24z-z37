@@ -29,15 +29,15 @@ def encrypt_message(message, otp):
 def decrypt_message(encrypted_message, otp):
     return ''.join(chr(byte ^ otp[i]) for i, byte in enumerate(encrypted_message))
 
-def construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=None):
+def construct_encrypted_message(session_key, msg_no, msg_content, msg_length_prefix=None):
     session_key_bytes = str(session_key).encode('ascii')
     otp = generate_otp(session_key, msg_no, len(msg_content))
     encrypted_msg_content = encrypt_message(msg_content, otp)
     mac = hmac.new(session_key_bytes, encrypted_msg_content, hashlib.sha256).digest()
 
-    if msg_prefix:
-        prefix = msg_prefix.encode('ascii')
-        return prefix + encrypted_msg_content + b'|' + mac
+    if msg_length_prefix:
+        msg_length_bytes = msg_length.to_bytes(2, byteorder='big')
+        return msg_length_bytes + b'|' + encrypted_msg_content + b'|' + mac
     else:
         return encrypted_msg_content + b'|' + mac
 
@@ -71,7 +71,7 @@ def connect_to_server(s):
     return session_key
 
 def send_message(s, session_key, msg_no):
-    encrypted_msg = construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=f'{msg_length}|')
+    encrypted_msg = construct_encrypted_message(session_key, msg_no, msg_content, msg_length_prefix=msg_length)
     s.sendall(encrypted_msg)
     print(f"Encrypted message sent: {encrypted_msg}")
 
