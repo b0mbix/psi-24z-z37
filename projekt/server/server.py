@@ -121,7 +121,8 @@ def serve_client(conn, addr, thread_no):
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, port))
-    # the number of unaccepted connections that the system will allow before refusing new connections    s.listen(max_connections)
+    # the number of unaccepted connections that the system will allow before refusing new connections
+    s.listen(max_connections)
 
     with ThreadPoolExecutor(max_connections) as executor:
         i=1
