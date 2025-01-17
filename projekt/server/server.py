@@ -93,7 +93,7 @@ def serve_client(conn, addr, thread_no):
             otp = generate_otp(session_key, msg_no, 10)
             decrypted_msg_content = decrypt_message(data[:10], otp)
             if decrypted_msg_content == 'EndSession':
-                print(f"Received EndSession {data} from thread {thread_no}")
+                print(f"Received EndSession from thread {thread_no}")
 
                 mac = data[-32:]
                 if verify_mac(data[:10], mac, session_key):
