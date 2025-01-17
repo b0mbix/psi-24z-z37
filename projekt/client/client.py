@@ -1,8 +1,7 @@
 import socket
 import sys
-import hmac
-import hashlib
-import random
+
+from cryptography_utils import calculate_public_key, calculate_session_key, generate_otp, encrypt_message, decrypt_message, construct_encrypted_message, verify_mac
 
 HOST = 'z37_projekt_server'
 port = 8000
@@ -15,31 +14,13 @@ if len(sys.argv) >= 3:
 module = 23
 base = 5
 private_key = 4
-public_key = (base ** private_key) % module
+public_key = calculate_public_key(base, private_key, module)
 
 hello_msg = f'ClientHello|{base}|{module}|{public_key}'
 msg_length = 50
 msg_prefix = f'{msg_length}|'
 msg_content = ''.join([chr(65 + i % 26) for i in range(msg_length)])
 endsession_msg = f'EndSession'
-
-def construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=None):
-    encrypted_msg_content = encrypt_message(msg_content, generate_otp(session_key, msg_no, len(msg_content)))
-    mac = hmac.new(session_key, encrypted_msg_content, hashlib.sha256).digest()
-    if msg_prefix:
-        return msg_prefix + encrypted_msg_content + '|' + mac
-    else:
-        return encrypted_msg_content + '|' + mac
-
-def generate_otp(session_key, msg_no, msg_len):
-    seed = session_key + msg_no
-    return [random.randint(0, 255) for _ in range(msg_len)]
-
-def encrypt_message(message, otp):
-    return [m ^ k for m, k in zip(message, otp)]
-
-def decrypt_message(encrypted_message, otp):
-    return encrypt_message(encrypted_message, otp)
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     print("Starting client job...")
@@ -53,6 +34,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     if parts[0] != 'ServerHello':
         s.close()
     server_public_key = int(parts[1])
-    session_key = (server_public_key ** private_key) % module
+    session_key = calculate_session_key(server_public_key, private_key, module)
+
+    msg_no = 1
+    encrypted_msg = construct_encrypted_message(session_key, msg_no, msg_content, msg_prefix=f'{msg_length}|')
+    s.sendall(encrypted_msg)
+    print(f"Encrypted message sent: {encrypted_msg}")
+
+    msg_no = 2
+    encrypted_end_session = construct_encrypted_message(session_key, msg_no, endsession_msg)
+    s.sendall(encrypted_end_session)
+    print("EndSession message sent.")
 
     s.close()
