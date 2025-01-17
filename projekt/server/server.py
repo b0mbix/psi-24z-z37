@@ -97,18 +97,13 @@ def serve_client(conn, addr, thread_no):
 
                 mac = data[-32:]
                 if verify_mac(data[:10], mac, session_key):
-                    print(f"Message integrity and authenticity confirmed")
-                    otp = generate_otp(session_key, msg_no, len(msg_content))
-                    decrypted_msg_content = decrypt_message(msg_content, otp)
-                    if decrypted_msg_content == 'EndSession':
-                        print(f"Received EndSession message from {thread_no}")
-                        conn.sendall("got it".encode('ascii'))
-                        break
+                    print("Message integrity and authenticity confirmed")
+                    conn.sendall("OK".encode('ascii'))
+                    break
                 else:
-                    print(f"Message integrity and authenticity compromised")
+                    print("Message integrity and authenticity compromised")
                     break
             else:
-                print(f"Received new message {data} from thread {thread_no}")
                 msg = b''
                 msg_len = 0
                 expected_msg_len = int.from_bytes(parts[0], "big")
@@ -131,7 +126,7 @@ def serve_client(conn, addr, thread_no):
                     otp = generate_otp(session_key, msg_no, len(msg_content))
                     decrypted_msg_content = decrypt_message(msg_content, otp)
                     print(f"Received message content: {decrypted_msg_content} from {thread_no}")
-                    conn.sendall("got it".encode('ascii'))
+                    conn.sendall("OK".encode('ascii'))
                     continue
                 else:
                     print("Message integrity and authenticity compromised")
