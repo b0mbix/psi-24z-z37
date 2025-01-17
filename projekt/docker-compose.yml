@@ -10,8 +10,8 @@ services:
       - z37_network
   
   client:
-    container_name: z37_projekt_client
-    hostname: z37_projekt_client
+    #container_name: z37_projekt_client
+     #hostname: z37_projekt_client
     build: ./client
     tty: true
     cap_add:
