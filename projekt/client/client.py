@@ -78,6 +78,7 @@ def send_message(s, session_key, msg_no):
 def break_connection(s, session_key, msg_no):
     encrypted_end_session = construct_encrypted_message(session_key, msg_no, endsession_msg)
     s.sendall(encrypted_end_session)
+    print(encrypted_end_session)
     print("Encrypted EndSession message sent.")
 
 def handle_response(s):

@@ -91,6 +91,7 @@ def serve_client(conn, addr, thread_no):
 
             parts = data.split(b'|')
             # Detect start of new message (then first 2 bytes are message size)
+            print(f"TYP TEST ENDSESSION {type(int.from_bytes(parts[0], "big"))}, {int.from_bytes(parts[0], "big")}")
             if type(int.from_bytes(parts[0], "big")) == int:
                 # print(f"Received new message {data} from thread {thread_no}")
                 msg = b''
