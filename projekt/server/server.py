@@ -148,6 +148,7 @@ def handle_commands():
     print("exit - exit server")
     print("")
     while True:
+        command = input("")
         if command == "help":
             print("Commands:")
             print("help - show this message")
