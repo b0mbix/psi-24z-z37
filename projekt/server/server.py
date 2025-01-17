@@ -91,6 +91,7 @@ def serve_client(conn, addr, thread_no):
             parts = data.split(b'|')
             # Detect start of new message (then first 2 bytes are message size)
             if type(parts[0].decode('ascii')) == int:
+                print(f"New message {data} from thread {thread_no}")
                 msg = b''
                 msg_len = 0
                 expected_msg_len = int(data[:2].decode('ascii'))
@@ -120,9 +121,11 @@ def serve_client(conn, addr, thread_no):
                     break
             # End session
             else:
+                print(f"Endsession {data} from thread {thread_no}")
+
                 msg_content = parts[0]
                 mac = parts[1]
-                print(mac)
+                print(f"Mac: {mac}")
                 if verify_mac(msg_content, mac, session_key):
                     print(f"Message integrity and authenticity confirmed")
                     otp = generate_otp(session_key, msg_no, len(msg_content))
