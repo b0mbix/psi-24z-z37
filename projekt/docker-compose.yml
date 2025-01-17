@@ -3,6 +3,7 @@ services:
     container_name: z37_projekt_server
     hostname: z37_projekt_server
     build: ./server
+    stdin_open: true
     tty: true
     cap_add:
       - NET_ADMIN

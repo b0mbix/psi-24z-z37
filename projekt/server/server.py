@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hmac
 import hashlib
 import random
+import threading
 
 def calculate_public_key(base, private_key, module):
     return (base ** private_key) % module
@@ -45,6 +46,7 @@ port = 8000
 max_connections = 5
 private_key = 3
 msg_len_addition = 34
+active_connections = {}
 
 if len(sys.argv) >= 2:
     port = int(sys.argv[1])
@@ -57,6 +59,7 @@ def serve_client(conn, addr, thread_no):
     received_base = -1
     received_module = -1
     with conn:
+        active_connections[thread_no] = conn
         # HANDLING CLIENT HELLO
         print('Connect from: ', addr)
         data = conn.recv( BUFSIZE )
@@ -126,25 +129,50 @@ def serve_client(conn, addr, thread_no):
                     decrypted_msg_content = decrypt_message(msg_content, otp)
                     print(f"Received message content: {decrypted_msg_content} from {thread_no}")
                     conn.sendall("OK".encode('ascii'))
+                    msg_no += 1
                     continue
                 else:
                     print("Message integrity and authenticity compromised")
                     break
 
+        active_connections.pop(thread_no)
         conn.close()
+
+
+def handle_commands():
+    while True:
+        command = input("Enter command (close <thread_no>): ")
+        if command.startswith("close"):
+            _, thread_no = command.split()
+            thread_no = int(thread_no)
+            if thread_no in active_connections:
+                print(f"Closing connection for client {thread_no}")
+                active_connections[thread_no].close()
+                active_connections.pop(thread_no)
+            else:
+                print(f"No active connection for thread {thread_no}")
+        elif command == "exit":
+            print("Exiting command handler...")
+            break
+
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, port))
-    # the number of unaccepted connections that the system will allow before refusing new connections
     s.listen(max_connections)
 
     with ThreadPoolExecutor(max_connections) as executor:
-        i=1
+        i = 1
         try:
+            # Start the command handler thread
+            command_thread = threading.Thread(target=handle_commands)
+            command_thread.daemon = True
+            command_thread.start()
+
             while True:
                 conn, addr = s.accept()
                 executor.submit(serve_client, conn, addr, i)
-                i+=1
+                i += 1
             executor.shutdown()
-        except:
-            ("Exiting manually...")
+        except Exception as e:
+            print(f"Error: {e}")
+            print("Exiting manually...")
