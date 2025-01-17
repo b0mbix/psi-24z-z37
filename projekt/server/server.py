@@ -110,6 +110,7 @@ def serve_client(conn, addr, thread_no):
                 # Encoded message without mac
                 msg_content = msg[:-32]
                 mac = msg[-32:]
+                print(f"Msg content: {msg_content}")
                 print(f"Mac: {mac}")
                 if verify_mac(msg_content, mac, session_key):
                     print(f"Message integrity and authenticity confirmed")
