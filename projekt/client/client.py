@@ -93,7 +93,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     print(response)
 
     #break_connection(s, session_key, msg_no)
-    response = s.recv(1024).decode('ascii')
-    print(response)
+    #response = s.recv(1024).decode('ascii')
+    #print(response)
 
     s.close()
